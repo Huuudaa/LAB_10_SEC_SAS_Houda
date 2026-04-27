@@ -72,47 +72,15 @@ méthodes Java sensibles (SharedPreferences, SQLite, Debug, Runtime).
 python --version
 pip --version
 ```
-
-**Résultat obtenu :**
-```
-Python 3.13.0
-pip 25.3 from C:\Users\HP PRO\AppData\Local\...\pip (python 3.13)
-```
-
 ### 1.2 Installation de frida et frida-tools
 
 ```cmd
 pip install --upgrade frida frida-tools
 ```
 
-**Résultat obtenu :**
-```
-Successfully installed frida-17.9.1 frida-tools-14.8.1
-prompt-toolkit-3.0.52 pygments-2.20.0 wcwidth-0.6.0 websockets-13.1
-```
-
 ### 1.3 Vérifications CLI
 
-```cmd
-frida --version
-```
-```
-17.9.1
-```
-
-```cmd
-frida-ps --version
-```
-```
-17.9.1
-```
-
-```cmd
-python -c "import frida, sys; print('frida', frida.__version__)"
-```
-```
-frida 17.9.1
-```
+<img width="1280" height="732" alt="image" src="https://github.com/user-attachments/assets/844f87e0-2dcf-47e7-ac94-2312383f3334" />
 
 ---
 
@@ -123,11 +91,8 @@ frida 17.9.1
 ```cmd
 adb shell getprop ro.product.cpu.abi
 ```
+<img width="902" height="314" alt="image" src="https://github.com/user-attachments/assets/a55f4e7b-9a63-4cd2-aea9-a54d39b6a8e1" />
 
-**Résultat :**
-```
-x86_64
-```
 
 ### 3.2 Télécharger frida-server compatible
 
@@ -135,13 +100,13 @@ Fichier téléchargé depuis `https://github.com/frida/frida/releases` :
 ```
 frida-server-17.9.1-android-x86_64.xz
 ```
+<img width="424" height="111" alt="image" src="https://github.com/user-attachments/assets/f305a6bd-1e68-4aaf-9931-038cb10b3bbe" />
 
 ### 3.3 Décompresser l'archive
 
 Extraction avec **7-Zip** sous Windows :
 ```
-Clic droit → 7-Zip → Extraire ici
-→ frida-server-17.9.1-android-x86_64  (110 787 848 octets)
+→ frida-server (110 787 848 octets)
 ```
 
 ### 3.4 Copier frida-server vers l'émulateur
@@ -149,13 +114,6 @@ Clic droit → 7-Zip → Extraire ici
 ```cmd
 adb push "C:\Users\HP PRO\Downloads\frida-server\frida-server-17.9.1-android-x86_64" /data/local/tmp/frida-server
 ```
-
-**Résultat :**
-```
-C:\Users\HP PRO\Downloads\frida-server\frida-server-17.9.1-android-x86_64: 1 file pushed.
-101.3 MB/s (110787848 bytes in 1.043s)
-```
-
 ### 3.5 Rendre le fichier exécutable
 
 ```cmd
@@ -167,32 +125,24 @@ adb shell chmod 755 /data/local/tmp/frida-server
 ```cmd
 adb shell /data/local/tmp/frida-server -l 0.0.0.0
 ```
+<img width="1076" height="436" alt="image" src="https://github.com/user-attachments/assets/6bdddd8d-2c6e-4597-9157-145604cac854" />
 
-**Résultat :**
-```
-Unable to load SELinux policy from the kernel: Failed to open file
-?/sys/fs/selinux/policy?: Permission denied
-```
-
-> ⚠️ Cette erreur SELinux est normale sur les émulateurs Google APIs.
-> Elle n'empêche pas le fonctionnement de frida-server.
 
 Lancement en arrière-plan (terminal dédié) :
 
 ```cmd
-adb shell "nohup /data/local/tmp/frida-server -l 0.0.0.0 >/dev/null 2>&1 &"
+adb shell "/data/local/tmp/frida-server &"
 ```
+<img width="854" height="134" alt="image" src="https://github.com/user-attachments/assets/0125b9e7-03d3-499c-a506-baead78a4403" />
+
 
 ### 3.7 Vérifier que frida-server est actif
 
 ```cmd
-adb shell ps | grep frida
+adb shell am start -n com.pwnsec.firestorm/.MainActivity
+frida-ps -U | findstr Firestorm 
 ```
-
-**Résultat :**
-```
-root     25595  1      frida-server
-```
+<img width="1049" height="342" alt="image" src="https://github.com/user-attachments/assets/377c2c97-8726-407a-bc76-ea15ec7a8b31" />
 
 ### 3.8 Configurer la redirection de ports ADB
 
@@ -200,12 +150,7 @@ root     25595  1      frida-server
 adb forward tcp:27042 tcp:27042
 adb forward tcp:27043 tcp:27043
 ```
-
-**Résultat :**
-```
-27042
-27043
-```
+<img width="934" height="194" alt="image" src="https://github.com/user-attachments/assets/5a2e0767-5d2e-4bde-8e71-adb69e35fa1d" />
 
 ---
 
@@ -214,37 +159,11 @@ adb forward tcp:27043 tcp:27043
 ```cmd
 frida-ps -U
 ```
-
-**Résultat (extrait) :**
-```
-  PID  Name
------  ----------------------------
-26507  Firestorm
-18914  Google
-19560  Google Play Store
-22145  Messages
- 1088  com.android.systemui
-  796  system_server
-  547  zygote64
-```
+<img width="1280" height="878" alt="image" src="https://github.com/user-attachments/assets/b25ae8f9-b265-4c10-b27f-1621f811b4bf" />
 
 ```cmd
 frida-ps -Uai
 ```
-
-**Résultat (extrait) :**
-```
- PID  Name           Identifier
-----  -------------  ----------------------------------
-  -   Calendar       com.google.android.calendar
-  -   Chrome         com.android.chrome
-  -   Clock          com.android.deskclock
-  -   Contacts       com.google.android.contacts
-  -   Settings       com.android.settings
-```
-
-Connexion établie ✅ Frida voit bien l'émulateur et liste ses processus.
-
 ---
 
 ## Étape 5 — Injection minimale pour valider
@@ -265,20 +184,8 @@ Java.perform(function () {
 frida -U -n Firestorm -l hello.js
 ```
 
-**Résultat obtenu :**
-```
-     ____
-    / _  |   Frida 17.9.1 - A world-class dynamic instrumentation toolkit
-   | (_| |
-    > _  |   Commands:
-   /_/ |_|       help      -> Displays the help system
-   . . . .       object?   -> Display information about 'object'
-   . . . .       exit/quit -> Exit
-   . . . .
-   . . . .   Connected to Android Emulator 5554 (id=emulator-5554)
-[+] Frida Java.perform OK
-[Android Emulator 5554::Firestorm ]->
-```
+<img width="853" height="347" alt="image" src="https://github.com/user-attachments/assets/2b204682-e788-4354-b2e5-224af54b9b1f" />
+<img width="405" height="830" alt="image" src="https://github.com/user-attachments/assets/678eee09-55e5-46ad-9841-4029e3191acc" />
 
 ✅ Frida est connecté, le processus est instrumenté, Java.perform fonctionne.
 
@@ -303,14 +210,7 @@ Interceptor.attach(Module.getExportByName(null, "recv"), {
 ```cmd
 frida -U -n Firestorm -l hello_native.js
 ```
-
-**Résultat obtenu :**
-```
-[+] Script chargé
-[Android Emulator 5554::Firestorm ]->
-[+] recv appelée
-[+] recv appelée
-```
+<img width="806" height="296" alt="image" src="https://github.com/user-attachments/assets/f883b662-0204-442c-84ee-9764c5fa55b1" />
 
 ✅ Le hooking natif fonctionne. La fonction `recv` est interceptée lors des
 communications réseau de l'application.
@@ -320,28 +220,17 @@ communications réseau de l'application.
 ## Étape 6 — Console interactive Frida
 
 Commandes exécutées dans la console après injection :
+<img width="1039" height="551" alt="image" src="https://github.com/user-attachments/assets/c535c303-c434-41c2-a761-0c016d23debf" />
 
 ### 6.1 Architecture du processus
 
 ```javascript
 Process.arch
 ```
-```
-"x64"
-```
-
 ### 6.2 Module principal
 
 ```javascript
 Process.mainModule
-```
-```
-{
-  "name": "app_process64",
-  "base": "0x5565b2c000",
-  "size": 57344,
-  "path": "/system/bin/app_process64"
-}
 ```
 
 ### 6.3 Informations sur libc.so
@@ -349,38 +238,15 @@ Process.mainModule
 ```javascript
 Process.getModuleByName("libc.so")
 ```
-```
-{
-  "name": "libc.so",
-  "base": "0x7f8a320000",
-  "size": 1032192,
-  "path": "/apex/com.android.runtime/lib64/bionic/libc.so"
-}
-```
-
 ### 6.4 Adresse de la fonction recv
 
 ```javascript
 Process.getModuleByName("libc.so").getExportByName("recv")
 ```
-```
-"0x7f8a3b1240"
-```
-
 ### 6.5 Modules chargés (extrait)
 
 ```javascript
 Process.enumerateModules()
-```
-```
-[
-  { name: "app_process64",   base: "0x5565b2c000", size: 57344    },
-  { name: "libc.so",         base: "0x7f8a320000", size: 1032192  },
-  { name: "libdvm.so",       base: "0x7f7c100000", size: 2097152  },
-  { name: "libssl.so",       base: "0x7f6d400000", size: 819200   },
-  { name: "libcrypto.so",    base: "0x7f6b200000", size: 3145728  },
-  ...
-]
 ```
 
 ### 6.6 Threads actifs (extrait)
@@ -388,26 +254,11 @@ Process.enumerateModules()
 ```javascript
 Process.enumerateThreads()
 ```
-```
-[
-  { id: 1245, state: "waiting",  name: "main"           },
-  { id: 1246, state: "waiting",  name: "Binder:1245_1"  },
-  { id: 1247, state: "waiting",  name: "RenderThread"   },
-  { id: 1248, state: "running",  name: "AsyncTask #1"   }
-]
-```
 
 ### 6.7 Zones mémoire exécutables (extrait)
 
 ```javascript
 Process.enumerateRanges('r-x')
-```
-```
-[
-  { base: "0x5565b2c000", size: 57344,   protection: "r-x", file: { path: "/system/bin/app_process64" } },
-  { base: "0x7f8a320000", size: 1032192, protection: "r-x", file: { path: "/apex/.../libc.so"         } },
-  { base: "0x7f6d400000", size: 819200,  protection: "r-x", file: { path: "/system/lib64/libssl.so"   } }
-]
 ```
 
 ### 6.8 Disponibilité du runtime Java
@@ -415,60 +266,16 @@ Process.enumerateRanges('r-x')
 ```javascript
 Java.available
 ```
-```
-true
-```
 
-### 6.9 Classes Java liées à l'application (extrait)
 
-```javascript
-Java.perform(function () {
-  Java.enumerateLoadedClasses({
-    onMatch: function (name) {
-      if (name.indexOf("app1") !== -1) { console.log(name); }
-    },
-    onComplete: function () { console.log("Fin de l'énumération"); }
-  });
-});
-```
-```
-com.pwnsec.firestorm.MainActivity
-com.pwnsec.firestorm.CodeCheck
-Fin de l'énumération
-```
-
-### 6.10 Bibliothèques liées au chiffrement
-
-```javascript
-Process.enumerateModules().filter(m =>
-  m.name.indexOf("ssl") !== -1 || m.name.indexOf("crypto") !== -1
-)
-```
-```
-[
-  { name: "libssl.so",    base: "0x7f6d400000", size: 819200  },
-  { name: "libcrypto.so", base: "0x7f6b200000", size: 3145728 }
-]
-```
-
-### 6.13 Informations du processus
+### 6.9 Informations du processus
 
 ```javascript
 Process.id
 ```
-```
-26507
-```
-
 ```javascript
 Process.platform
 ```
-```
-"android"
-```
-
----
-
 ## Étape 7 — Observation des bibliothèques réseau et stockage
 
 ### hook_connect.js
@@ -495,15 +302,7 @@ Interceptor.attach(connectPtr, {
 frida -U -n Firestorm -l hook_connect.js
 ```
 
-**Résultat :**
-```
-[+] Hook connect chargé
-[+] connect trouvée à : 0x7f8a3b0f80
-[+] connect appelée
-    fd = 12
-    sockaddr = 0x7fc3a28b10
-    retour = 0
-```
+<img width="977" height="388" alt="image" src="https://github.com/user-attachments/assets/007be0ea-548c-43a3-8f07-cc4406d99ddd" />
 
 ---
 
@@ -533,17 +332,7 @@ Interceptor.attach(recvPtr, {
   }
 });
 ```
-
-**Résultat :**
-```
-[+] Hooks réseau chargés
-[+] send trouvée à : 0x7f8a3b1180
-[+] recv trouvée à : 0x7f8a3b1240
-[+] send appelée — fd=12 len=248
-[+] recv appelée — fd=12 len=4096
-    recv retourne = 512
-```
-
+<img width="850" height="326" alt="image" src="https://github.com/user-attachments/assets/cb4a5ee1-3348-42d7-b93c-f32db6c5893e" />
 ---
 
 ### hook_file.js
@@ -568,126 +357,7 @@ Interceptor.attach(readPtr, {
 });
 ```
 
-**Résultat :**
-```
-[+] Hook fichiers chargé
-[+] open appelée : /data/data/com.pwnsec.firestorm/shared_prefs/app_settings.xml
-[+] read appelée — fd=8 taille=4096
-[+] open appelée : /data/data/com.pwnsec.firestorm/databases/app.db
-[+] read appelée — fd=9 taille=4096
-```
-
----
-
-## Étape 8 — Hooking de méthodes Java sensibles
-
-### hook_prefs.js — Lecture SharedPreferences
-
-```javascript
-Java.perform(function () {
-  console.log("[+] Hook SharedPreferences chargé");
-
-  var Impl = Java.use("android.app.SharedPreferencesImpl");
-
-  Impl.getString.overload("java.lang.String", "java.lang.String").implementation = function (key, defValue) {
-    var result = this.getString(key, defValue);
-    console.log("[SharedPreferences][getString] key=" + key + " => " + result);
-    return result;
-  };
-
-  Impl.getBoolean.overload("java.lang.String", "boolean").implementation = function (key, defValue) {
-    var result = this.getBoolean(key, defValue);
-    console.log("[SharedPreferences][getBoolean] key=" + key + " => " + result);
-    return result;
-  };
-});
-```
-
-**Résultat :**
-```
-[+] Hook SharedPreferences chargé
-[SharedPreferences][getBoolean] key=first_launch => false
-[SharedPreferences][getString]  key=user_token   => eyJhbGciOiJIUzI1NiJ9...
-[SharedPreferences][getString]  key=theme        => dark
-```
-
----
-
-### hook_sqlite.js — Requêtes SQLite
-
-```javascript
-Java.perform(function () {
-  console.log("[+] Hook SQLite chargé");
-
-  var SQLiteDatabase = Java.use("android.database.sqlite.SQLiteDatabase");
-
-  SQLiteDatabase.execSQL.overload("java.lang.String").implementation = function (sql) {
-    console.log("[SQLite][execSQL] " + sql);
-    return this.execSQL(sql);
-  };
-
-  SQLiteDatabase.rawQuery.overload("java.lang.String", "[Ljava.lang.String;").implementation = function (sql, args) {
-    console.log("[SQLite][rawQuery] " + sql);
-    return this.rawQuery(sql, args);
-  };
-});
-```
-
-**Résultat :**
-```
-[+] Hook SQLite chargé
-[SQLite][execSQL]   CREATE TABLE IF NOT EXISTS sessions (id INTEGER PRIMARY KEY, token TEXT)
-[SQLite][rawQuery]  SELECT * FROM sessions WHERE active=1
-```
-
----
-
-### hook_debug.js — Vérifications de débogage
-
-```javascript
-Java.perform(function () {
-  console.log("[+] Hook Debug chargé");
-
-  var Debug = Java.use("android.os.Debug");
-
-  Debug.isDebuggerConnected.implementation = function () {
-    var result = this.isDebuggerConnected();
-    console.log("[Debug] isDebuggerConnected() => " + result);
-    return result;
-  };
-});
-```
-
-**Résultat :**
-```
-[+] Hook Debug chargé
-[Debug] isDebuggerConnected() => false
-[Debug] isDebuggerConnected() => false
-```
-
----
-
-### hook_runtime.js — Commandes système
-
-```javascript
-Java.perform(function () {
-  console.log("[+] Hook Runtime.exec chargé");
-
-  var Runtime = Java.use("java.lang.Runtime");
-
-  Runtime.exec.overload("java.lang.String").implementation = function (cmd) {
-    console.log("[Runtime.exec] " + cmd);
-    return this.exec(cmd);
-  };
-});
-```
-
-**Résultat :**
-```
-[+] Hook Runtime.exec chargé
-[Runtime.exec] which su
-[Runtime.exec] /system/xbin/which su
-```
+<img width="968" height="360" alt="image" src="https://github.com/user-attachments/assets/853c16bf-35ac-4cab-b680-6c306700d6b5" />
 
 ---
 
@@ -725,11 +395,6 @@ Java.perform(function () {
 ```cmd
 adb shell /data/local/tmp/frida-server -l 0.0.0.0
 ```
-```
-Unable to load SELinux policy from the kernel: Permission denied
-```
-→ Erreur SELinux non bloquante, frida-server fonctionne ✅
-
 ```cmd
 frida-ps -Uai
 ```
@@ -754,21 +419,6 @@ frida -U -n Firestorm -l hello.js
 frida -U -n Firestorm -l hello.js
 Failed to attach: unable to connect to remote frida-server
 ```
-
-**Diagnostic :**
-```cmd
-adb shell ps | grep frida
-```
-→ Aucun résultat → frida-server n'est pas lancé
-
-**Correction :**
-```cmd
-adb shell "/data/local/tmp/frida-server &"
-frida-ps -U
-```
-→ Liste des processus affichée → connexion rétablie ✅
-
----
 
 ## Nettoyage
 
